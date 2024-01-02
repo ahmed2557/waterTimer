@@ -1,0 +1,63 @@
+.countDiv{
+    display: inline-flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    margin: 0 25px;
+    background-color: #4caf5000;
+    box-shadow: 0px 0px 20px 0px #000000;
+    width: 280px;
+    height: 250px;
+    border-radius: 24px;
+    color: white;
+}
+
+.countDiv::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 0; /* Initial width */
+    background-color: red; /* Progress color */
+    z-index: -1;
+    transition: width 0.5s; /* Add transition for a smooth effect */
+  }
+
+button:hover{
+    cursor: pointer;
+    box-shadow: 0px 0px 6px 3px #8BC34A;
+}
+
+button{
+    height: 58px;
+    width: 157px;
+    box-shadow: 0px 0px 6px 0px #8BC34A;
+    font-size: 21px;
+    color: green;
+    background-color: #dfdfdf;
+    border-radius: 27px;
+    border: 0px #858500;
+    margin: 40px 15px;
+}
+
+input{
+    margin: 16px;
+    border: 0;
+    background-color: #ffffff00;
+    font-family: cursive;
+    font-size: 60px;
+    color: white;
+    width: 72px;
+}
+
+input[type="number"] {
+    -webkit-appearance: none;
+    -moz-appearance: textfield; /* Firefox */
+    appearance: textfield; /* Chrome, Edge, Safari */
+  }
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
