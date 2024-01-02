@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Timer</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+<body>
+<div>
+<video id="bgVid" src="video/bgVideo.mp4" autoplay muted loop style="height: 116vh; margin: -13px; position: fixed; z-index: -100;">
+</video>
+</div>
+<div style="position: fixed;"> 
+    <button id="muteButt" style="    border-radius: 123px; width: 50px; height: 50px; display: inline-flex; align-items: center; justify-content: center;">
+        <img src="audio/icons8-audio.gif" style="height: 40px; border-radius: 20px;">
+    </button>
+</div>
+<div style="display: inline-flex; align-items: center; width: 100%; justify-content: center;">
+    <div style=" width: 961px; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 91vh; font-family: cursive;">
+        <div style="display: inline-flex; justify-content: center; font-size: 60px; align-items: center;">
+            <div class="countDiv"> 
+                <span> Hours </span>
+                <input type="number" id="demoH" value="00">
+            </div>
+            
+            <div class="countDiv">
+                <span> Minutes </span>
+                <input type="number" id="demoM" value="00">
+            </div>
+            <div class="countDiv">
+                <span> Seconds </span>
+                <input type="number" id="demo" value="00">
+            </div>
+        </div>
+        <div id="buttFirst" style="display: flex; height: 21px;">
+            <button id="startButt">Start</button>
+        </div>
+    </div>
+    <div>
+        <div style="width: 90px; height: 294px; box-shadow: 0px 8px 13px 1px black;display: flex; flex-direction: column-reverse;">
+            <div id="waterDiv" style="height: 233px; width: 100%; background-color: #0000ff7a;"></div>
+        </div>
+    </div>
+</div>
+
+
+<div id="audFile">
+    
+</div>
+
+<script>
+    
+    let element = document.getElementById("startButt");
+    element.addEventListener("click", myFunction);
+
+    let buttFirstSpan = document.getElementById("buttFirst");
+    let buttSecSpan = document.getElementById("buttFirst");
+
+    let buttFirst = document.createElement("button");
+    buttFirst.innerHTML = "Start";
+    buttFirst.setAttribute("id", "startButt");
+    let buttSec = document.createElement("button");
+    buttSec.innerHTML = "Pause";
+    buttSec.setAttribute("id", "prBtn");
+    let buttSec2 = document.createElement("button");
+    buttSec2.innerHTML = "Stop";
+    buttSec2.setAttribute("id", "stopBtn");
+    let soundDiv = document.getElementById("audFile");
+    soundDiv.innerHTML = "<audio id='audioStartCD' src='audio/three-two-one-fight-deep-voice-38382.mp3'></audio>";
+    let audioStartCD = document.getElementById('audioStartCD');
+    audioStartCD.autoplay = false;
+    audioStartCD.volume = 1;
+    soundDiv.innerHTML="<audio id='audioCD' src='audio/motivational-corporate-medium1-110677.mp3'></audio>";
+    let audioCD = document.getElementById("audioCD"); // audioStartCD countdown
+    audioCD.autoplay = false;
+    audioCD.volume = 1;
+    soundDiv.innerHTML="<audio id='audioEndCD' src='audio/success-1-6297.mp3'></audio>";
+    let audioEndCD = document.getElementById("audioEndCD");
+    audioEndCD.autoplay = false;
+    audioEndCD.volume = 1;
+
+    let isRunning = false;
+    let targetTime = 0;
+    let timerId;
+    let buttMute = document.getElementById("muteButt");
+    function muteUnmute(){
+        if(audioCD.volume == 1){
+            buttMute.innerHTML = "<img src='audio/icons8-no-audio.gif' style='height: 40px; border-radius: 20px;'>";
+            audioCD.volume = 0;
+            return;
+        }
+        else{
+            buttMute.innerHTML = "<img src='audio/icons8-audio.gif' style='height: 40px; border-radius: 20px;'>";
+            audioCD.volume = 1;
+            return;
+        }
+        return;
+    }
+    buttMute.addEventListener("click", muteUnmute);
+
+    document.getElementById("demoH").addEventListener("click", function() {
+        this.select();
+    });
+    document.getElementById("demoM").addEventListener("click", function() {
+        this.select();
+    });
+    document.getElementById("demo").addEventListener("click", function() {
+        this.select();
+    });
+    function myFunction() {
+        let userInH = Number(document.getElementById("demoH").value);
+        let userInM = Number(document.getElementById("demoM").value);
+        let userInS = Number(document.getElementById("demo").value);
+        console.log(typeof userInM);
+        console.log(userInM);
+        let userIn =(userInH * 3600000) + (userInM * 60000) + (userInS * 1000) + 5000;
+        if (userIn <= 5000) {
+            window.alert("Incorrect timer Value");
+            return;
+        }
+        console.log(userIn);
+        element.style.display = "none";
+        buttSecSpan.appendChild(buttSec);
+        buttSecSpan.appendChild(buttSec2);
+        buttSec2.style.display = "none";
+        buttSec.style.display = "none";
+
+        let currentDate = new Date();
+        let timeStamp = currentDate.getTime();
+
+        targetTime = userIn + timeStamp;
+        
+        function processItem() {
+            buttSec2.style.display = "block";
+            buttSec.style.display = "block";
+            audioCD.play();
+            console.log("volume is " + audioCD.volume);
+            currentDate = new Date();
+            timeStamp = currentDate.getTime();
+            
+            if (isRunning && targetTime > timeStamp) {
+                let diffTime = Math.trunc((targetTime - timeStamp) / 1000);
+                let waterCal = ((((userIn/1000) - diffTime)/(userIn/1000))) * 100;
+                document.getElementById("waterDiv").style.height = waterCal + "%";
+                let hours = Math.floor(diffTime / 3600);
+                let minutes = Math.floor((diffTime % 3600) / 60);
+                let seconds = diffTime % 60;
+
+                document.getElementById("demoH").value = hours < 10 ? "0" + hours : hours;
+                document.getElementById("demoM").value = minutes < 10 ? "0" + minutes : minutes;
+                document.getElementById("demo").value = seconds < 10 ? "0" + seconds : seconds;
+
+                if(diffTime < 5 && diffTime > 3){
+                    audioCD.volume = 0.7;
+                }
+                if(diffTime < 4 && diffTime > 2){
+                    audioCD.volume = 0.4;
+                }
+                if(diffTime < 1 && diffTime > 3){
+                    audioCD.volume = 0.2;
+                }
+                if(diffTime < 0 && diffTime > 1){
+                    audioCD.volume = 0.1;
+                }
+
+                if(diffTime < 1){
+                    isRunning = false;
+                    audioCD.pause();
+                    audioEndCD.play();
+                    buttSec2.style.display = "none";
+                    buttSec.style.display = "none";
+                    element.style.display = "block";
+                    window.alert("GO DRINK WATER");
+                    return;
+                }
+
+                timerId = setTimeout(processItem, 1000);
+            }
+
+            if (!isRunning && targetTime <= timeStamp) {
+                document.getElementById("demoH").value = "00";
+                document.getElementById("demoM").value = "00";
+                document.getElementById("demo").value = "00";
+                element.style.display = "block"; // Show the Start button
+            }
+        }
+
+        buttSec2.addEventListener("click", function () {
+            clearTimeout(timerId);
+            isRunning = false;
+             // Pause the audioStartCD if Stop is clicked
+            element.style.display = "block";
+            processItem(); // Reset the display
+            audioCD.pause();
+            document.getElementById("demoH").value = "00";
+            document.getElementById("demoM").value = "00";
+            document.getElementById("demo").value = "00";
+            buttSec2.style.display = "none";
+            buttSec.style.display = "none";
+        });
+
+        isRunning = true;
+        audioStartCD.play(); // Play the audioStartCD during the 5000 milliseconds delay
+        setTimeout(function() {
+            audioStartCD.pause(); // Pause the audioStartCD after the delay
+            audioCD.currentTime = 0;
+            audioStartCD.currentTime = 0;
+            processItem(); // Start the timer after the delay
+        }, 5000);
+    }
+</script>
+
+</body>
+</html>
