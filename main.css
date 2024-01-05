@@ -1,28 +1,105 @@
-.countDiv{
-    display: inline-flex;
+.mainCont{
+  display: inline-flex;
     align-items: center;
+    width: 100%;
     flex-direction: column;
+    height: 93vh;
     justify-content: center;
-    margin: 0 25px;
-    background-color: #4caf5000;
-    box-shadow: 0px 0px 20px 0px #000000;
-    width: 280px;
-    height: 250px;
-    border-radius: 24px;
-    color: white;
 }
 
-.countDiv::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 0; /* Initial width */
-    background-color: red; /* Progress color */
-    z-index: -1;
-    transition: width 0.5s; /* Add transition for a smooth effect */
-  }
+.contTwo{
+   width: 961px;
+   display: inline-flex; 
+   flex-direction: column; 
+   align-items: center; 
+   justify-content: center; 
+   width: 100%; 
+   font-family: cursive; 
+   margin-bottom: 35px;
+}
+
+.timerCont{
+  display: inline-flex;
+  justify-content: center;
+  font-size: 60px;
+  align-items: center;
+  margin-bottom: 28px;
+}
+
+.timer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin: 0 25px;
+  background-color: #4caf5000;
+  box-shadow: 0px 0px 20px 0px #000000;
+  width: 280px;
+  height: 280px;
+  border-radius: 140px;
+  color: white;
+}
+
+#timerS::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: conic-gradient( transparent 0deg, #00ff0a 0deg var(--angleS, 0deg), transparent var(--angleS, 0deg) 360deg );
+  mask: radial-gradient(circle, transparent 68.5%, #000 70%);
+  z-index: -100;
+}
+
+#timerM::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: conic-gradient( transparent 0deg, #00ffe7 0deg var(--angleM, 0deg), transparent var(--angleM, 0deg) 360deg );
+  mask: radial-gradient(circle, transparent 68.5%, #000 70%);
+  z-index: -100;
+}
+
+#timerH::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: conic-gradient( transparent 0deg, #0089ff 0deg var(--angleH, 0deg), transparent var(--angleH, 0deg) 360deg );
+  mask: radial-gradient(circle, transparent 68.5%, #000 70%);
+  z-index: -100;
+}
+
+input[type="number"] {
+  -webkit-appearance: none;
+  -moz-appearance: textfield; /* Firefox */
+  appearance: textfield; /* Chrome, Edge, Safari */
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+-webkit-appearance: none;
+margin: 0;
+}
+
+.waterCont{
+  width: 907px;
+  height: 10px; 
+  box-shadow: 0px 8px 13px 1px black;
+  display: flex;
+  flex-direction: column-reverse;
+  border-radius: 5px;
+}
 
 button:hover{
     cursor: pointer;
@@ -38,7 +115,7 @@ button{
     background-color: #dfdfdf;
     border-radius: 27px;
     border: 0px #858500;
-    margin: 40px 15px;
+    margin: 0 8px;
 }
 
 input{
@@ -51,13 +128,29 @@ input{
     width: 72px;
 }
 
-input[type="number"] {
-    -webkit-appearance: none;
-    -moz-appearance: textfield; /* Firefox */
-    appearance: textfield; /* Chrome, Edge, Safari */
+@media only screen and (max-width: 954px){
+  .mainCont{
+      height: auto;
   }
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+  
+  .timerCont{
+    flex-direction: column;
+    font-size: 43px;
+    margin-bottom: 8px;
+  }
+  
+  .waterCont{
+    width: 330px;
+  }
+
+  .timer{
+    margin: 8px 25px;
+    width: 225px;
+    height: 225px;
+    padding: 3px;
+  }
+  
+  .contTwo{
+    margin-bottom: 16px;
+  }
 }
