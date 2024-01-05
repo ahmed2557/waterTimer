@@ -13,42 +13,50 @@
     <button id="muteButt" style="    border-radius: 123px; width: 50px; height: 50px; display: inline-flex; align-items: center; justify-content: center;">
         <img src="audio/icons8-audio.gif" style="height: 40px; border-radius: 20px;">
     </button>
-</div>
-<div style="display: inline-flex; align-items: center; width: 100%; justify-content: center;">
-    <div style=" width: 961px; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 91vh; font-family: cursive;">
-        <div style="display: inline-flex; justify-content: center; font-size: 60px; align-items: center;">
-            <div class="countDiv"> 
-                <span> Hours </span>
-                <input type="number" id="demoH" value="00">
-            </div>
+</div>  
+<div class="mainCont">
+        <div class="contTwo">
+            <div class="timerCont">
+                <div class="timer" id="timerH">
+                    <span> Hours </span>
+                    <input type="number" id="demoH" value="00">
+                </div>
             
-            <div class="countDiv">
-                <span> Minutes </span>
-                <input type="number" id="demoM" value="00">
+                <div class="timer" id="timerM">
+                    <span> Minutes </span>
+                    <input type="number" id="demoM" value="00">
+                </div>
+                <div class="timer" id="timerS">
+                    <span> Seconds </span>
+                    <input type="number" id="demo" value="00">
+                </div>
             </div>
-            <div class="countDiv">
-                <span> Seconds </span>
-                <input type="number" id="demo" value="00">
+            <div class="waterCont">
+                <div id="waterDiv" style="height: 100%; width: 0px; background-color: rgb(0 0 255);
+                ;">
+                </div>
             </div>
         </div>
-        <div id="buttFirst" style="display: flex; height: 21px;">
-            <button id="startButt">Start</button>
+        <div id="buttFirst" style="display: flex;">
+                <button id="startButt">Start</button>
         </div>
-    </div>
-    <div>
-        <div style="width: 90px; height: 294px; box-shadow: 0px 8px 13px 1px black;display: flex; flex-direction: column-reverse;">
-            <div id="waterDiv" style="height: 233px; width: 100%; background-color: #0000ff7a;"></div>
-        </div>
-    </div>
 </div>
+    <div style="color: white; font-size: 23px; margin: 8px 0;">
+        You studied for: <span id="timeStudSpanH">00</span>h <span id="timeStudSpanM">00</span>m <span id="timeStudSpanS">00</span>S
+    </div>
 
-
-<div id="audFile">
+    <div id="audFile">
     
-</div>
+    </div>
 
 <script>
-    
+    let timerElementH = document.getElementById('timerH');
+    let timerElementM = document.getElementById('timerM');
+    let timerElementS = document.getElementById('timerS');
+    let angleH = 360, angleM = 360, angleS = 360;
+    timerElementH.style.setProperty('--angleH', `${angleH}deg`);
+    timerElementM.style.setProperty('--angleM', `${angleM}deg`);
+    timerElementS.style.setProperty('--angleS', `${angleS}deg`);
     let element = document.getElementById("startButt");
     element.addEventListener("click", myFunction);
 
@@ -77,6 +85,22 @@
     let audioEndCD = document.getElementById("audioEndCD");
     audioEndCD.autoplay = false;
     audioEndCD.volume = 1;
+    let toTalTimeH = 0;
+    let toTalTimeM = 0;
+    let toTalTimeS = 0;
+    let timeStudSpanH = document.getElementById("timeStudSpanH");
+    let timeStudSpanM = document.getElementById("timeStudSpanM");
+    let timeStudSpanS = document.getElementById("timeStudSpanS");
+    // Retrieve total study time from localStorage
+let storedTotalTimeH = localStorage.getItem('totalStudyTimeH');
+let storedTotalTimeM = localStorage.getItem('totalStudyTimeM');
+let storedTotalTimeS = localStorage.getItem('totalStudyTimeS');
+
+// Display total study time
+timeStudSpanH.innerHTML = (storedTotalTimeH ? (storedTotalTimeH < 10 ? "0" : "") + storedTotalTimeH : "0");
+timeStudSpanM.innerHTML = (storedTotalTimeM ? (storedTotalTimeM < 10 ? "0" : "") + storedTotalTimeM : "0");
+timeStudSpanS.innerHTML = (storedTotalTimeS ? (storedTotalTimeS < 10 ? "0" : "") + storedTotalTimeS : "0");
+
 
     let isRunning = false;
     let targetTime = 0;
@@ -126,7 +150,7 @@
 
         let currentDate = new Date();
         let timeStamp = currentDate.getTime();
-
+        audioCD.volume = 1;
         targetTime = userIn + timeStamp;
         
         function processItem() {
@@ -137,10 +161,11 @@
             currentDate = new Date();
             timeStamp = currentDate.getTime();
             
+
             if (isRunning && targetTime > timeStamp) {
                 let diffTime = Math.trunc((targetTime - timeStamp) / 1000);
                 let waterCal = ((((userIn/1000) - diffTime)/(userIn/1000))) * 100;
-                document.getElementById("waterDiv").style.height = waterCal + "%";
+                document.getElementById("waterDiv").style.width = waterCal + "%";
                 let hours = Math.floor(diffTime / 3600);
                 let minutes = Math.floor((diffTime % 3600) / 60);
                 let seconds = diffTime % 60;
@@ -149,29 +174,75 @@
                 document.getElementById("demoM").value = minutes < 10 ? "0" + minutes : minutes;
                 document.getElementById("demo").value = seconds < 10 ? "0" + seconds : seconds;
 
-                if(diffTime < 5 && diffTime > 3){
+                if(userInH > 0){
+                    angleH = ((hours * 360) / userInH);
+                }
+                if(userInM > 0){
+                    angleM = ((minutes * 360) / userInM);
+                }
+                if(userInS > 0){
+                    angleS = ((seconds * 360) / userInS);
+                }
+          
+                timerElementH.style.setProperty('--angleH', `${angleH}deg`);
+                timerElementM.style.setProperty('--angleM', `${angleM}deg`);
+                timerElementS.style.setProperty('--angleS', `${angleS}deg`);
+                
+
+                if(diffTime < 5 && diffTime >= 4){
                     audioCD.volume = 0.7;
+                    console.log("Volume changeeeeeeeeeeee");
                 }
-                if(diffTime < 4 && diffTime > 2){
-                    audioCD.volume = 0.4;
+                if(diffTime >= 3 && diffTime < 4){
+                    audioCD.volume = 0.5;
                 }
-                if(diffTime < 1 && diffTime > 3){
-                    audioCD.volume = 0.2;
+                if(diffTime >= 2 && diffTime < 3){
+                    audioCD.volume = 0.3;
                 }
-                if(diffTime < 0 && diffTime > 1){
+                if(diffTime >= 1 && diffTime < 2){
                     audioCD.volume = 0.1;
                 }
-
-                if(diffTime < 1){
-                    isRunning = false;
-                    audioCD.pause();
-                    audioEndCD.play();
-                    buttSec2.style.display = "none";
-                    buttSec.style.display = "none";
-                    element.style.display = "block";
-                    window.alert("GO DRINK WATER");
-                    return;
+                if(diffTime >= 0 && diffTime < 1){
+                    audioCD.volume = 0;
                 }
+
+                if (diffTime < 1) {
+    isRunning = false;
+    timerElementH.style.setProperty('--angleH', `${360}deg`);
+    timerElementM.style.setProperty('--angleM', `${360}deg`);
+    timerElementS.style.setProperty('--angleS', `${360}deg`);
+    
+    // Calculate total study time
+    toTalTimeH += Math.floor((userIn - 5000) / 3600000);
+    toTalTimeM += Math.floor(((userIn - 5000) % 3600000) / 60000);
+    toTalTimeS += Math.floor(((userIn - 5000) % 60000) / 1000);
+
+    // Handle carry-over
+    toTalTimeM += Math.floor(toTalTimeS / 60);
+    toTalTimeS %= 60;
+    toTalTimeH += Math.floor(toTalTimeM / 60);
+    toTalTimeM %= 60;
+
+    // Display and store total study time
+    timeStudSpanH.innerHTML = (toTalTimeH < 10 ? "0" : "") + toTalTimeH;
+    timeStudSpanM.innerHTML = (toTalTimeM < 10 ? "0" : "") + toTalTimeM;
+    timeStudSpanS.innerHTML = (toTalTimeS < 10 ? "0" : "") + toTalTimeS;
+
+    // Store total study time in localStorage
+    localStorage.setItem('totalStudyTimeH', toTalTimeH);
+    localStorage.setItem('totalStudyTimeM', toTalTimeM);
+    localStorage.setItem('totalStudyTimeS', toTalTimeS);
+
+    audioCD.pause();
+    audioEndCD.play();
+    buttSec2.style.display = "none";
+    buttSec.style.display = "none";
+    element.style.display = "block";
+    window.alert("GO DRINK WATER");
+    return;
+}
+
+
 
                 timerId = setTimeout(processItem, 1000);
             }
