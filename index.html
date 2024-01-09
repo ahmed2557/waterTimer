@@ -96,21 +96,22 @@
     let timeBreakSpanH = document.getElementById("timeBreakSpanH");
     let timeBreakSpanM = document.getElementById("timeBreakSpanM");
     let timeBreakSpanS = document.getElementById("timeBreakSpanS");
-    // Retrieve total study time from localStorage
-let storedTotalTimeH = localStorage.getItem('totalStudyTimeH');
-let storedTotalTimeM = localStorage.getItem('totalStudyTimeM');
-let storedTotalTimeS = localStorage.getItem('totalStudyTimeS');
-let storedBreakTimeH = localStorage.getItem('totalBreakTimeH');
-let storedBreakTimeM = localStorage.getItem('totalBreakTimeM');
-let storedBreakTimeS = localStorage.getItem('totalBreakTimeS');
+
+    let storedTotalTimeH = localStorage.getItem('totalStudyTimeH') || 0;
+    let storedTotalTimeM = localStorage.getItem('totalStudyTimeM') || 0;
+    let storedTotalTimeS = localStorage.getItem('totalStudyTimeS') || 0;
+
+    let storedBreakTimeH = localStorage.getItem('totalBreakTimeH') || 0;
+    let storedBreakTimeM = localStorage.getItem('totalBreakTimeM') || 0;
+    let storedBreakTimeS = localStorage.getItem('totalBreakTimeS') || 0;
 
 // Display total study time
-timeStudSpanH.innerHTML = (storedTotalTimeH ? (storedTotalTimeH < 10 ? "0" : "") + storedTotalTimeH : "0");
-timeStudSpanM.innerHTML = (storedTotalTimeM ? (storedTotalTimeM < 10 ? "0" : "") + storedTotalTimeM : "0");
-timeStudSpanS.innerHTML = (storedTotalTimeS ? (storedTotalTimeS < 10 ? "0" : "") + storedTotalTimeS : "0");
-timeBreakSpanH.innerHTML = (storedBreakTimeH ? (storedBreakTimeH < 10 ? "0" : "") + storedBreakTimeH : "0");
-timeBreakSpanM.innerHTML = (storedBreakTimeM ? (storedBreakTimeM < 10 ? "0" : "") + storedBreakTimeM : "0");
-timeBreakSpanS.innerHTML = (storedBreakTimeS ? (storedBreakTimeS < 10 ? "0" : "") + storedBreakTimeS : "0");
+timeStudSpanH.innerHTML = (storedTotalTimeH ? (storedTotalTimeH < 10 ? "" : "") + storedTotalTimeH : "");
+timeStudSpanM.innerHTML = (storedTotalTimeM ? (storedTotalTimeM < 10 ? "" : "") + storedTotalTimeM : "");
+timeStudSpanS.innerHTML = (storedTotalTimeS ? (storedTotalTimeS < 10 ? "" : "") + storedTotalTimeS : "");
+timeBreakSpanH.innerHTML = (storedBreakTimeH ? (storedBreakTimeH < 10 ? "" : "") + storedBreakTimeH : "");
+timeBreakSpanM.innerHTML = (storedBreakTimeM ? (storedBreakTimeM < 10 ? "" : "") + storedBreakTimeM : "");
+timeBreakSpanS.innerHTML = (storedBreakTimeS ? (storedBreakTimeS < 10 ? "" : "") + storedBreakTimeS : "");
 
 
 
@@ -297,7 +298,8 @@ function getCurrentDate() {
 
     if (userActivity.toLowerCase() === 'study') {
 
-
+        console.log("stopredtotaltimes " , storedTotalTimeS);
+        console.log("-----------> " , parseFloat(storedTotalTimeS));
         timeStudSpanH.innerHTML = ((toTalTimeH + parseFloat(storedTotalTimeH)) < 10 ? "0" : "") + (toTalTimeH + parseFloat(storedTotalTimeH));
         timeStudSpanM.innerHTML = ((toTalTimeM + parseFloat(storedTotalTimeM) + Math.floor((toTalTimeS + parseFloat(storedTotalTimeS)) / 60)) < 10 ? "0" : "") + (toTalTimeM + parseFloat(storedTotalTimeM) + Math.floor((toTalTimeS + parseFloat(storedTotalTimeS)) / 60));
         timeStudSpanS.innerHTML = ((toTalTimeS + parseFloat(storedTotalTimeS)) % 60 < 10 ? "0" : "") + ((toTalTimeS + parseFloat(storedTotalTimeS)) % 60);
