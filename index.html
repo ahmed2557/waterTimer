@@ -9,7 +9,7 @@
 <video id="bgVid" src="video/bgVideo.mp4" autoplay muted loop style="height: 116vh; margin: -13px; position: fixed; z-index: -100;">
 </video>
 </div>
-<div style="position: fixed;"> 
+<div style="position: fixed; top: 10px; right: 4px;"> 
     <button id="muteButt" style="    border-radius: 123px; width: 50px; height: 50px; display: inline-flex; align-items: center; justify-content: center;">
         <img src="audio/icons8-audio.gif" style="height: 40px; border-radius: 20px;">
     </button>
@@ -41,8 +41,10 @@
                 <button id="startButt">Start</button>
         </div>
 </div>
-    <div style="color: white; font-size: 23px; margin: 8px 0;">
+    <div style="color: white; font-size: 23px; margin: 8px 0; position: fixed; top: 2px; left: 7px;">
         You studied for: <span id="timeStudSpanH">00</span>h <span id="timeStudSpanM">00</span>m <span id="timeStudSpanS">00</span>S
+        <br>
+        You took a break for: <span id="timeBreakSpanH">00</span>h <span id="timeBreakSpanM">00</span>m <span id="timeBreakSpanS">00</span>s
     </div>
 
     <div id="audFile">
@@ -91,15 +93,25 @@
     let timeStudSpanH = document.getElementById("timeStudSpanH");
     let timeStudSpanM = document.getElementById("timeStudSpanM");
     let timeStudSpanS = document.getElementById("timeStudSpanS");
+    let timeBreakSpanH = document.getElementById("timeBreakSpanH");
+    let timeBreakSpanM = document.getElementById("timeBreakSpanM");
+    let timeBreakSpanS = document.getElementById("timeBreakSpanS");
     // Retrieve total study time from localStorage
 let storedTotalTimeH = localStorage.getItem('totalStudyTimeH');
 let storedTotalTimeM = localStorage.getItem('totalStudyTimeM');
 let storedTotalTimeS = localStorage.getItem('totalStudyTimeS');
+let storedBreakTimeH = localStorage.getItem('totalBreakTimeH');
+let storedBreakTimeM = localStorage.getItem('totalBreakTimeM');
+let storedBreakTimeS = localStorage.getItem('totalBreakTimeS');
 
 // Display total study time
-timeStudSpanH.innerHTML = (storedTotalTimeH ? (storedTotalTimeH < 10 ? "0" : "") + storedTotalTimeH : "0");
-timeStudSpanM.innerHTML = (storedTotalTimeM ? (storedTotalTimeM < 10 ? "0" : "") + storedTotalTimeM : "0");
-timeStudSpanS.innerHTML = (storedTotalTimeS ? (storedTotalTimeS < 10 ? "0" : "") + storedTotalTimeS : "0");
+timeStudSpanH.innerHTML = (storedTotalTimeH ? ((toTalTimeH + parseFloat(storedTotalTimeH)) < 10 ? "0" : "") + (toTalTimeH + parseFloat(storedTotalTimeH)) : "00");
+timeStudSpanM.innerHTML = (storedTotalTimeM ? ((toTalTimeM + parseFloat(storedTotalTimeM) + Math.floor((toTalTimeS + parseFloat(storedTotalTimeS)) / 60)) < 10 ? "0" : "") + (toTalTimeM + parseFloat(storedTotalTimeM) + Math.floor((toTalTimeS + parseFloat(storedTotalTimeS)) / 60)) : "00");
+timeStudSpanS.innerHTML = (storedTotalTimeS ? (((toTalTimeS + parseFloat(storedTotalTimeS)) % 60) < 10 ? "0" : "") + ((toTalTimeS + parseFloat(storedTotalTimeS)) % 60) : "00");
+
+timeBreakSpanH.innerHTML = (storedBreakTimeH ? ((toTalTimeH + parseFloat(storedBreakTimeH)) < 10 ? "0" : "") + (toTalTimeH + parseFloat(storedBreakTimeH)) : "00");
+timeBreakSpanM.innerHTML = (storedBreakTimeM ? ((toTalTimeM + parseFloat(storedBreakTimeM) + Math.floor((toTalTimeS + parseFloat(storedBreakTimeS)) / 60)) < 10 ? "0" : "") + (toTalTimeM + parseFloat(storedBreakTimeM) + Math.floor((toTalTimeS + parseFloat(storedBreakTimeS)) / 60)) : "00");
+timeBreakSpanS.innerHTML = (storedBreakTimeS ? (((toTalTimeS + parseFloat(storedBreakTimeS)) % 60) < 10 ? "0" : "") + ((toTalTimeS + parseFloat(storedBreakTimeS)) % 60) : "00");
 
 
     let isRunning = false;
@@ -131,6 +143,9 @@ timeStudSpanS.innerHTML = (storedTotalTimeS ? (storedTotalTimeS < 10 ? "0" : "")
         this.select();
     });
     function myFunction() {
+        audioCD.autoplay = false;
+        audioCD.currentTime = 0;
+        audioCD.volume = 0;
         let userInH = Number(document.getElementById("demoH").value);
         let userInM = Number(document.getElementById("demoM").value);
         let userInS = Number(document.getElementById("demo").value);
@@ -152,6 +167,53 @@ timeStudSpanS.innerHTML = (storedTotalTimeS ? (storedTotalTimeS < 10 ? "0" : "")
         let timeStamp = currentDate.getTime();
         audioCD.volume = 1;
         targetTime = userIn + timeStamp;
+
+
+        function getCurrentDate() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function isNewDay() {
+            const currentDate = getCurrentDate();
+            const storedDate = localStorage.getItem('currentDate');
+            return currentDate !== storedDate;
+        }
+
+        function resetDailyTimer() {
+            toTalTimeH = 0;
+            toTalTimeM = 0;
+            toTalTimeS = 0;
+            toTalBreakTimeH = 0;
+            toTalBreakTimeM = 0;
+            toTalBreakTimeS = 0;
+
+            // Update stored date to the current date
+            localStorage.setItem('currentDate', getCurrentDate());
+
+            // Reset UI accordingly
+            timeStudSpanH.innerHTML = '00';
+            timeStudSpanM.innerHTML = '00';
+            timeStudSpanS.innerHTML = '00';
+            timeBreakSpanH.innerHTML = '00';
+            timeBreakSpanM.innerHTML = '00';
+            timeBreakSpanS.innerHTML = '00';
+
+            // Clear previous day's data in localStorage
+            localStorage.removeItem('totalStudyTimeH');
+            localStorage.removeItem('totalStudyTimeM');
+            localStorage.removeItem('totalStudyTimeS');
+            localStorage.removeItem('totalBreakTimeH');
+            localStorage.removeItem('totalBreakTimeM');
+            localStorage.removeItem('totalBreakTimeS');
+        }
+
+        if (isNewDay()) {
+            resetDailyTimer();
+        }
         
         function processItem() {
             buttSec2.style.display = "block";
@@ -164,7 +226,7 @@ timeStudSpanS.innerHTML = (storedTotalTimeS ? (storedTotalTimeS < 10 ? "0" : "")
 
             if (isRunning && targetTime > timeStamp) {
                 let diffTime = Math.trunc((targetTime - timeStamp) / 1000);
-                let waterCal = ((((userIn/1000) - diffTime)/(userIn/1000))) * 100;
+                let waterCal = (((((userIn - 5000) / 1000) - diffTime) / ((userIn - 5000) / 1000))) * 100;
                 document.getElementById("waterDiv").style.width = waterCal + "%";
                 let hours = Math.floor(diffTime / 3600);
                 let minutes = Math.floor((diffTime % 3600) / 60);
@@ -189,20 +251,20 @@ timeStudSpanS.innerHTML = (storedTotalTimeS ? (storedTotalTimeS < 10 ? "0" : "")
                 timerElementS.style.setProperty('--angleS', `${angleS}deg`);
                 
 
-                if(diffTime < 5 && diffTime >= 4){
+                if (diffTime < 5 && diffTime >= 4) {
                     audioCD.volume = 0.7;
                     console.log("Volume changeeeeeeeeeeee");
                 }
-                if(diffTime >= 3 && diffTime < 4){
+                if (diffTime >= 3 && diffTime < 4) {
                     audioCD.volume = 0.5;
                 }
-                if(diffTime >= 2 && diffTime < 3){
+                if (diffTime >= 2 && diffTime < 3) {
                     audioCD.volume = 0.3;
                 }
-                if(diffTime >= 1 && diffTime < 2){
+                if (diffTime >= 1 && diffTime < 2) {
                     audioCD.volume = 0.1;
                 }
-                if(diffTime >= 0 && diffTime < 1){
+                if (diffTime >= 0 && diffTime < 1) {
                     audioCD.volume = 0;
                 }
 
@@ -211,34 +273,54 @@ timeStudSpanS.innerHTML = (storedTotalTimeS ? (storedTotalTimeS < 10 ? "0" : "")
     timerElementH.style.setProperty('--angleH', `${360}deg`);
     timerElementM.style.setProperty('--angleM', `${360}deg`);
     timerElementS.style.setProperty('--angleS', `${360}deg`);
-    
+
+
     // Calculate total study time
     toTalTimeH += Math.floor((userIn - 5000) / 3600000);
     toTalTimeM += Math.floor(((userIn - 5000) % 3600000) / 60000);
     toTalTimeS += Math.floor(((userIn - 5000) % 60000) / 1000);
+    console.log("totaltimes " , toTalTimeS)
 
     // Handle carry-over
-    toTalTimeM += Math.floor(toTalTimeS / 60);
+    toTalTimeM += Math.floor((toTalTimeS / 60));
     toTalTimeS %= 60;
     toTalTimeH += Math.floor(toTalTimeM / 60);
     toTalTimeM %= 60;
-
-    // Display and store total study time
-    timeStudSpanH.innerHTML = (toTalTimeH < 10 ? "0" : "") + toTalTimeH;
-    timeStudSpanM.innerHTML = (toTalTimeM < 10 ? "0" : "") + toTalTimeM;
-    timeStudSpanS.innerHTML = (toTalTimeS < 10 ? "0" : "") + toTalTimeS;
-
-    // Store total study time in localStorage
-    localStorage.setItem('totalStudyTimeH', toTalTimeH);
-    localStorage.setItem('totalStudyTimeM', toTalTimeM);
-    localStorage.setItem('totalStudyTimeS', toTalTimeS);
 
     audioCD.pause();
     audioEndCD.play();
     buttSec2.style.display = "none";
     buttSec.style.display = "none";
     element.style.display = "block";
-    window.alert("GO DRINK WATER");
+    let userActivity = 'aaaaa';
+    do {
+        userActivity = prompt("Did you just finish a study session or a break? Enter 'study' or 'break'");
+    } while (userActivity.toLowerCase() !== 'study' && userActivity.toLowerCase() !== 'break');
+
+    if (userActivity.toLowerCase() === 'study') {
+
+
+        timeStudSpanH.innerHTML = ((toTalTimeH + parseFloat(storedTotalTimeH)) < 10 ? "0" : "") + (toTalTimeH + parseFloat(storedTotalTimeH));
+        timeStudSpanM.innerHTML = ((toTalTimeM + parseFloat(storedTotalTimeM) + Math.floor((toTalTimeS + parseFloat(storedTotalTimeS)) / 60)) < 10 ? "0" : "") + (toTalTimeM + parseFloat(storedTotalTimeM) + Math.floor((toTalTimeS + parseFloat(storedTotalTimeS)) / 60));
+        timeStudSpanS.innerHTML = ((toTalTimeS + parseFloat(storedTotalTimeS)) % 60 < 10 ? "0" : "") + ((toTalTimeS + parseFloat(storedTotalTimeS)) % 60);
+
+
+    // Store total study time in localStorage
+    localStorage.setItem('totalStudyTimeH', (((toTalTimeH + parseFloat(storedTotalTimeH)) < 10 ? "0" : "") + (toTalTimeH + parseFloat(storedTotalTimeH))));
+    localStorage.setItem('totalStudyTimeM', (((toTalTimeM + parseFloat(storedTotalTimeM) + Math.floor((toTalTimeS + parseFloat(storedTotalTimeS)) / 60)) < 10 ? "0" : "") + (toTalTimeM + parseFloat(storedTotalTimeM) + Math.floor((toTalTimeS + parseFloat(storedTotalTimeS)) / 60))));
+    localStorage.setItem('totalStudyTimeS', (((toTalTimeS + parseFloat(storedTotalTimeS)) % 60 < 10 ? "0" : "") + ((toTalTimeS + parseFloat(storedTotalTimeS)) % 60)));
+
+    }
+     else if (userActivity.toLowerCase() === 'break') {
+        timeBreakSpanH.innerHTML = ((toTalTimeH + parseFloat(storedBreakTimeH)) < 10 ? "0" : "") + (toTalTimeH + parseFloat(storedBreakTimeH));
+        timeBreakSpanM.innerHTML = ((toTalTimeM + parseFloat(storedBreakTimeM) + Math.floor((toTalTimeS + parseFloat(storedBreakTimeS)) / 60)) < 10 ? "0" : "") + (toTalTimeM + parseFloat(storedBreakTimeM) + Math.floor((toTalTimeS + parseFloat(storedBreakTimeS)) / 60));
+        timeBreakSpanS.innerHTML = ((toTalTimeS + parseFloat(storedBreakTimeS)) % 60 < 10 ? "0" : "") + ((toTalTimeS + parseFloat(storedBreakTimeS)) % 60);
+
+    // Store total study time in localStorage
+    localStorage.setItem('totalBreakTimeH', (((toTalTimeH + parseFloat(storedBreakTimeH)) < 10 ? "0" : "") + (toTalTimeH + parseFloat(storedBreakTimeH))));
+    localStorage.setItem('totalBreakTimeM', (((toTalTimeM + parseFloat(storedBreakTimeM) + Math.floor((toTalTimeS + parseFloat(storedBreakTimeS)) / 60)) < 10 ? "0" : "") + (toTalTimeM + parseFloat(storedBreakTimeM) + Math.floor((toTalTimeS + parseFloat(storedBreakTimeS)) / 60))));
+    localStorage.setItem('totalBreakTimeS', (((toTalTimeS + parseFloat(storedBreakTimeS)) % 60 < 10 ? "0" : "") + ((toTalTimeS + parseFloat(storedBreakTimeS)) % 60)));
+    }
     return;
 }
 
