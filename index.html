@@ -105,15 +105,60 @@ let storedBreakTimeM = localStorage.getItem('totalBreakTimeM');
 let storedBreakTimeS = localStorage.getItem('totalBreakTimeS');
 
 // Display total study time
-timeStudSpanH.innerHTML = (storedTotalTimeH ? ((toTalTimeH + parseFloat(storedTotalTimeH)) < 10 ? "0" : "") + (toTalTimeH + parseFloat(storedTotalTimeH)) : "00");
-timeStudSpanM.innerHTML = (storedTotalTimeM ? ((toTalTimeM + parseFloat(storedTotalTimeM) + Math.floor((toTalTimeS + parseFloat(storedTotalTimeS)) / 60)) < 10 ? "0" : "") + (toTalTimeM + parseFloat(storedTotalTimeM) + Math.floor((toTalTimeS + parseFloat(storedTotalTimeS)) / 60)) : "00");
-timeStudSpanS.innerHTML = (storedTotalTimeS ? (((toTalTimeS + parseFloat(storedTotalTimeS)) % 60) < 10 ? "0" : "") + ((toTalTimeS + parseFloat(storedTotalTimeS)) % 60) : "00");
+timeStudSpanH.innerHTML = (storedTotalTimeH ? (storedTotalTimeH < 10 ? "0" : "") + storedTotalTimeH : "0");
+timeStudSpanM.innerHTML = (storedTotalTimeM ? (storedTotalTimeM < 10 ? "0" : "") + storedTotalTimeM : "0");
+timeStudSpanS.innerHTML = (storedTotalTimeS ? (storedTotalTimeS < 10 ? "0" : "") + storedTotalTimeS : "0");
+timeBreakSpanH.innerHTML = (storedBreakTimeH ? (storedBreakTimeH < 10 ? "0" : "") + storedBreakTimeH : "0");
+timeBreakSpanM.innerHTML = (storedBreakTimeM ? (storedBreakTimeM < 10 ? "0" : "") + storedBreakTimeM : "0");
+timeBreakSpanS.innerHTML = (storedBreakTimeS ? (storedBreakTimeS < 10 ? "0" : "") + storedBreakTimeS : "0");
 
-timeBreakSpanH.innerHTML = (storedBreakTimeH ? ((toTalTimeH + parseFloat(storedBreakTimeH)) < 10 ? "0" : "") + (toTalTimeH + parseFloat(storedBreakTimeH)) : "00");
-timeBreakSpanM.innerHTML = (storedBreakTimeM ? ((toTalTimeM + parseFloat(storedBreakTimeM) + Math.floor((toTalTimeS + parseFloat(storedBreakTimeS)) / 60)) < 10 ? "0" : "") + (toTalTimeM + parseFloat(storedBreakTimeM) + Math.floor((toTalTimeS + parseFloat(storedBreakTimeS)) / 60)) : "00");
-timeBreakSpanS.innerHTML = (storedBreakTimeS ? (((toTalTimeS + parseFloat(storedBreakTimeS)) % 60) < 10 ? "0" : "") + ((toTalTimeS + parseFloat(storedBreakTimeS)) % 60) : "00");
 
 
+function getCurrentDate() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function isNewDay() {
+            const currentDate = getCurrentDate();
+            const storedDate = localStorage.getItem('currentDate');
+            return currentDate !== storedDate;
+        }
+
+        function resetDailyTimer() {
+            toTalTimeH = 0;
+            toTalTimeM = 0;
+            toTalTimeS = 0;
+            toTalBreakTimeH = 0;
+            toTalBreakTimeM = 0;
+            toTalBreakTimeS = 0;
+
+            // Update stored date to the current date
+            localStorage.setItem('currentDate', getCurrentDate());
+
+            // Reset UI accordingly
+            timeStudSpanH.innerHTML = '00';
+            timeStudSpanM.innerHTML = '00';
+            timeStudSpanS.innerHTML = '00';
+            timeBreakSpanH.innerHTML = '00';
+            timeBreakSpanM.innerHTML = '00';
+            timeBreakSpanS.innerHTML = '00';
+
+            // Clear previous day's data in localStorage
+            localStorage.removeItem('totalStudyTimeH');
+            localStorage.removeItem('totalStudyTimeM');
+            localStorage.removeItem('totalStudyTimeS');
+            localStorage.removeItem('totalBreakTimeH');
+            localStorage.removeItem('totalBreakTimeM');
+            localStorage.removeItem('totalBreakTimeS');
+        }
+
+        if (isNewDay()) {
+            resetDailyTimer();
+    }
     let isRunning = false;
     let targetTime = 0;
     let timerId;
@@ -167,53 +212,6 @@ timeBreakSpanS.innerHTML = (storedBreakTimeS ? (((toTalTimeS + parseFloat(stored
         let timeStamp = currentDate.getTime();
         audioCD.volume = 1;
         targetTime = userIn + timeStamp;
-
-
-        function getCurrentDate() {
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
-
-        function isNewDay() {
-            const currentDate = getCurrentDate();
-            const storedDate = localStorage.getItem('currentDate');
-            return currentDate !== storedDate;
-        }
-
-        function resetDailyTimer() {
-            toTalTimeH = 0;
-            toTalTimeM = 0;
-            toTalTimeS = 0;
-            toTalBreakTimeH = 0;
-            toTalBreakTimeM = 0;
-            toTalBreakTimeS = 0;
-
-            // Update stored date to the current date
-            localStorage.setItem('currentDate', getCurrentDate());
-
-            // Reset UI accordingly
-            timeStudSpanH.innerHTML = '00';
-            timeStudSpanM.innerHTML = '00';
-            timeStudSpanS.innerHTML = '00';
-            timeBreakSpanH.innerHTML = '00';
-            timeBreakSpanM.innerHTML = '00';
-            timeBreakSpanS.innerHTML = '00';
-
-            // Clear previous day's data in localStorage
-            localStorage.removeItem('totalStudyTimeH');
-            localStorage.removeItem('totalStudyTimeM');
-            localStorage.removeItem('totalStudyTimeS');
-            localStorage.removeItem('totalBreakTimeH');
-            localStorage.removeItem('totalBreakTimeM');
-            localStorage.removeItem('totalBreakTimeS');
-        }
-
-        if (isNewDay()) {
-            resetDailyTimer();
-        }
         
         function processItem() {
             buttSec2.style.display = "block";
